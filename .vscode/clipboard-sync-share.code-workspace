@@ -1,0 +1,46 @@
+{
+  "folders": [
+    {
+      "name": "root",
+      "path": ".."
+    },
+    {
+      "name": "electron",
+      "path": "../src/electron"
+    },
+    {
+      "name": "ui",
+      "path": "../src/ui"
+    },
+    {
+      "name": "shared",
+      "path": "../src/shared"
+    }
+  ],
+  "extensions": {
+    "recommendations": [
+      // Twind (TailwindCSS in js) 智能提示
+      "sastan.twind-intellisense",
+      // styled-component 样式提示
+      "styled-components.vscode-styled-components",
+      // prettier
+      "esbenp.prettier-vscode",
+      // eslint
+      "dbaeumer.vscode-eslint",
+      // 对 注释内容 做高亮处理
+      "aaron-bond.better-comments",
+      // 选择翻译 (场景：国外开源库的类型注释、变量名)
+      "intellsmi.comment-translate",
+      // 英文句子中的符号检测 (英句中不可出现中文标点符号)
+      "wangzy.sneak-mark"
+    ]
+  },
+  "settings": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true
+    },
+    "editor.formatOnSave": true,
+    "typescript.tsdk": "root/node_modules/typescript/lib",
+    "twind.attributes": ["tw", "apply"]
+  }
+}

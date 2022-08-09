@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./base.json",
+  "compilerOptions": {
+    "rootDir": "../../",
+    "baseUrl": "../../",
+    "composite": true,
+    "lib": ["ESNext", "DOM"],
+    "allowJs": false,
+    "moduleResolution": "Node",
+    "jsx": "react-jsx",
+    "paths": {
+      "@shared/*": ["src/shared/*"]
+    }
+  },
+  "include": [
+    "../../vite.config.ts",
+    "../../src/electron/**/*",
+    "../../src/shared/**/*",
+    "../../scripts/**/*",
+    "../../**/*.json"
+  ]
+}

@@ -1,0 +1,3 @@
+{
+  "references": [{ "path": "./config/ts/node.json" }, { "path": "./config/ts/web.json" }]
+}
