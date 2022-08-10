@@ -30,6 +30,7 @@ export const useAppStore = create<
         set(state => {
           state.currentLocale = locale;
         })
+
       //#endregion  //*======== action ===========
     })),
     {

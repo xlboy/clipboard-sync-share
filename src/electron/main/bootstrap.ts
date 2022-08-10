@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell } from 'electron';
+import { app, BrowserWindow, session, shell } from 'electron';
 import { release } from 'os';
 import { join } from 'path';
 import './service';
@@ -35,6 +35,8 @@ async function createWindow() {
     win.loadURL(url);
     win.webContents.openDevTools();
 
+    app.commandLine.appendSwitch('ignore-certificate-errors');
+
     new BrowserWindow({
       title: 'clipboard-sync-app-page-2',
       webPreferences: {
@@ -42,6 +44,7 @@ async function createWindow() {
         nodeIntegration: true
       }
     }).loadURL(`${url}/page-2`);
+
     // win.hide();
   }
 
@@ -49,6 +52,8 @@ async function createWindow() {
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', new Date().toLocaleString());
   });
+
+  // setWebRequest();
 
   // Make all links open with the browser, not with the application
   win.webContents.setWindowOpenHandler(({ url }) => {
@@ -58,10 +63,48 @@ async function createWindow() {
   });
 }
 
+function setWebRequest() {
+  console.log('--setWebRequest--');
+  const ses = session.defaultSession;
+
+  ses.webRequest.onErrorOccurred(details => {
+    console.log('--onErrorOccurred--', details.url);
+    console.log(details.error);
+  });
+
+  ses.webRequest.onBeforeRequest((_details, callback) => {
+    console.log('--onBeforeRequest--', _details.url);
+    callback({ cancel: false });
+  });
+
+  ses.webRequest.onBeforeSendHeaders((_details, callback) => {
+    console.log('--onBeforeSendHeaders--', _details.url);
+    callback({ cancel: false });
+  });
+
+  ses.webRequest.onHeadersReceived((_details, callback) => {
+    console.log('--onHeadersReceived--', _details.url);
+    callback({ cancel: false });
+  });
+
+  ses.webRequest.onResponseStarted(_details => {
+    console.log('--onResponseStarted--', _details.url);
+  });
+
+  ses.webRequest.onSendHeaders(_details => {
+    console.log('--onSendHeaders--', _details.url);
+  });
+
+  ses.webRequest.onCompleted(_details => {
+    console.log('--onCompleted--', _details.url);
+  });
+}
+
 app.whenReady().then(createWindow);
 
 app.on('window-all-closed', () => {
   win = null;
+
   if (process.platform !== 'darwin') app.quit();
 });
 

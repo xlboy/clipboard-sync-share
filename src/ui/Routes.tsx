@@ -1,13 +1,13 @@
 import { useRoutes } from 'react-router-dom';
 
-import IndexPage from './pages/index';
+import HomePage from './pages/Home';
 import Page2 from './pages/page-2';
 
 function Routes(): JSX.Element {
   const element = useRoutes([
     {
       index: true,
-      element: <IndexPage />
+      element: <HomePage />
     },
     {
       path: '/page-2',

@@ -6,13 +6,26 @@ namespace IPCMainSubscribe {
     };
 
     'socket-server:start-server': {
-      args: [];
+      args: [config: { port: number }];
       return: /* server-port */ number;
     };
 
     'socket-server:close-server': {
       args: [];
       return: void;
+    };
+
+    'socket-client:connect': {
+      args: [address: string];
+      return: void;
+    };
+    'socket-client:close': {
+      args: [];
+      return: void;
+    };
+    'socket-client:get-status': {
+      args: [];
+      return: /* is-connected-status */ boolean;
     };
   }
 

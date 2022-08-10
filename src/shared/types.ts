@@ -1,1 +1,3 @@
 export {};
+
+declare global {}

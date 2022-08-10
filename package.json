@@ -55,6 +55,8 @@
     "rimraf": "^3.0.2",
     "simple-git-hooks": "^2.8.0",
     "socket.io": "^4.5.1",
+    "socket.io-client": "^4.5.1",
+    "ts-toolbelt": "^9.6.0",
     "tsx": "^3.8.1",
     "twind": "^0.16.17",
     "typescript": "^4.7.4",
@@ -73,7 +75,7 @@
     "commit-msg": "pnpm exec commitlint -e $1 -g ./commitlint.config.js"
   },
   "env": {
-    "VITE_DEV_SERVER_HOST": "127.0.0.1",
+    "VITE_DEV_SERVER_HOST": "0.0.0.0",
     "VITE_DEV_SERVER_PORT": 7777
   }
 }

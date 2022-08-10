@@ -17,6 +17,10 @@ export default defineConfig({
         find: /@ui/,
         replacement: resolve(process.cwd(), './src/ui')
       }
+      // {
+      //   find: 'xmlhttprequest-ssl',
+      //   replacement: './node_modules/engine.io-client/lib/xmlhttprequest.js'
+      // }
     ]
   },
   plugins: [
