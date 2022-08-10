@@ -38,7 +38,7 @@
         "prev": ["const", "let", "var", "block-like", "import", "interface"],
         "next": "*"
       },
-      { "blankLine": "always", "prev": "*", "next": ["return", "export"] },
+      { "blankLine": "always", "prev": "*", "next": ["return", "export", "if"] },
       { "blankLine": "always", "prev": "import", "next": ["return", "export"] },
       {
         "blankLine": "any",
