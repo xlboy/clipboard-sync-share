@@ -3,7 +3,7 @@ import { ipcMain } from 'electron';
 import controller from './controller';
 
 ipcMain.handle('socket-server:get-current-open-status', () => {
-  return controller.currentStatus;
+  return controller.isStartedStatus;
 });
 
 ipcMain.handle('socket-server:start-server', () => {

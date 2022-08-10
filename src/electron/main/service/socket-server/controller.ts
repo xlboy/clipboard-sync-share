@@ -13,9 +13,7 @@ class SocketServerController {
   private io: SocketServerType | null = null;
 
   start(): StartedPort {
-    const isNotClosed = this.io !== null;
-
-    if (isNotClosed) {
+    if (this.isStartedStatus) {
       this.close();
     }
 
@@ -30,10 +28,8 @@ class SocketServerController {
     this.io = null;
   }
 
-  get currentStatus() {
-    const isStartedStatus = this.io !== null;
-
-    return isStartedStatus;
+  get isStartedStatus() {
+    return this.io !== null;
   }
 
   private startServer(): SocketServerType {
