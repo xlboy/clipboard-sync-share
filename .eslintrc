@@ -1,5 +1,5 @@
 {
-  "ignorePatterns": [".history"],
+  "ignorePatterns": [".history", "dist"],
   "extends": [
     "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended",
