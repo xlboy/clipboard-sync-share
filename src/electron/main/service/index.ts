@@ -1,2 +1,2 @@
-// import './clipboard-sync-share';
-import './socket-server';
+import './clipboard-sync-share';
+import './socket';

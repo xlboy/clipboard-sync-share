@@ -1,4 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
+import type { F } from 'ts-toolbelt';
 
 const exposedAPI = {
   ioServer: {

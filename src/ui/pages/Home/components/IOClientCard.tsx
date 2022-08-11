@@ -1,13 +1,16 @@
-import { Button, Card, Input, Text } from '@nextui-org/react';
-import { useRequest, useSetState } from 'ahooks';
-import { tw } from 'twind';
+import { Button, Card, Input, Loading, Row, Text } from '@nextui-org/react';
+import type { ClientSocket } from '@shared/types/socket';
+import { useSetState } from 'ahooks';
+import { memo } from 'react';
+import type { F } from 'ts-toolbelt';
 
-interface IOClientCardProps {}
+interface IOClientCardProps {
+  refreshConnectedStatus: F.Function;
+  clientSocketStatus?: ClientSocket.Status;
+}
 
 function IOClientCard(props: IOClientCardProps): JSX.Element {
-  const { data: isConnectedStatus, refresh: refreshConnectedStatus } = useRequest(
-    mainProcessAPI.ioClient.getStatus
-  );
+  const { clientSocketStatus, refreshConnectedStatus } = props;
 
   const [{ connectAddress }, setStates] = useSetState({
     connectAddress: 'http://localhost:8888'
@@ -20,37 +23,34 @@ function IOClientCard(props: IOClientCardProps): JSX.Element {
   }
 
   async function onConnectClientSocket() {
-    console.log('时间1', +new Date());
-
     if (connectAddress) {
-      await mainProcessAPI.ioClient.connect(connectAddress);
-      console.log('时间2', +new Date());
+      mainProcessAPI.ioClient.connect(connectAddress);
 
       refreshConnectedStatus();
+    } else {
+      alert('Please enter connect address');
     }
+  }
 
-    alert('please enter connect address');
+  async function onCancelClientSocket() {
+    await mainProcessAPI.ioClient.close();
+    refreshConnectedStatus();
   }
 
   return (
-    <Card className={tw`w-full my-[10px]`}>
+    <Card css={{ w: '100%', my: 10 }}>
       <Card.Header>
-        <div className={tw`w-full flex justify-between`}>
-          <Text b>Client Ctronller</Text>
-          {/* <Text b color={isStartedServer ? '#54da00' : '#da5e00'}>
-            <span className={tw`h-[5px] w-[5px]`}>
-              {isStartedServer ? `${serverPort} port started` : 'closed'}
-            </span>
-          </Text> */}
-        </div>
+        <Row justify="space-between" css={{ w: '100%' }}>
+          <Text b>Client Controller</Text>
+        </Row>
       </Card.Header>
       <Card.Divider />
 
-      <Card.Body className={tw`py-[10px]`}>
-        <div className={tw`mt-[23px]`}>
+      <Card.Body css={{ py: 10 }}>
+        <Row css={{ mt: 23 }}>
           <Input
             bordered
-            labelPlaceholder="connectAddress"
+            labelPlaceholder="Connect Address"
             css={{ w: '100%' }}
             color="secondary"
             value={connectAddress}
@@ -58,18 +58,38 @@ function IOClientCard(props: IOClientCardProps): JSX.Element {
               setStates({ connectAddress: e.target.value });
             }}
           />
-        </div>
+        </Row>
 
-        <div className={tw`mt-[10px]`}>
-          {isConnectedStatus ? (
-            <Button onPress={onCloseClientSocket}>关闭</Button>
+        <Row css={{ mt: 10 }}>
+          {clientSocketStatus === 'connected' ? (
+            <Button
+              onPress={onCloseClientSocket}
+              css={{ w: '100%' }}
+              color="error"
+              shadow
+            >
+              Disconnect
+            </Button>
           ) : (
-            <Button onPress={onConnectClientSocket}>连接</Button>
+            (isConnectingStatus => (
+              <Button
+                onPress={
+                  isConnectingStatus ? onCancelClientSocket : onConnectClientSocket
+                }
+                css={{ w: '100%' }}
+                color={isConnectingStatus ? 'warning' : 'success'}
+                iconRight={
+                  isConnectingStatus ? <Loading color="currentColor" size="sm" /> : null
+                }
+              >
+                {isConnectingStatus ? 'Cancel' : 'Connect'}
+              </Button>
+            ))(clientSocketStatus === 'connecting')
           )}
-        </div>
+        </Row>
       </Card.Body>
     </Card>
   );
 }
 
-export default IOClientCard;
+export default memo(IOClientCard);
