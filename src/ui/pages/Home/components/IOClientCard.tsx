@@ -49,6 +49,9 @@ function IOClientCard(props: IOClientCardProps): JSX.Element {
       <Card.Body css={{ py: 10 }}>
         <Row css={{ mt: 23 }}>
           <Input
+            disabled={(['connecting', 'connected'] as ClientSocket.Status[]).includes(
+              clientSocketStatus!
+            )}
             bordered
             labelPlaceholder="Connect Address"
             css={{ w: '100%' }}

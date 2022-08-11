@@ -41,13 +41,12 @@ function HomePage(): JSX.Element {
   return (
     <div className={styles['root-wrapper']}>
       <Header />
-      {/* {ClientCardModule.clientSocketStatus === 'disconnect' && (
+      {ClientCardModule.data.clientSocketStatus === 'disconnect' && (
         <ServerCardModule.Component {...ServerCardModule.data} />
       )}
-      {!ServerCardModule.serverStarted && <ClientCardModule.Component {...ClientCardModule.data} />} */}
-
-      <ServerCardModule.Component {...ServerCardModule.data} />
-      <ClientCardModule.Component {...ClientCardModule.data} />
+      {!ServerCardModule.data.serverStarted && (
+        <ClientCardModule.Component {...ClientCardModule.data} />
+      )}
     </div>
   );
 }

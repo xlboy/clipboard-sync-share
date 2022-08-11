@@ -43,6 +43,7 @@ function IOServerCard(props: IOServerCardProps): JSX.Element {
       <Card.Body css={{ py: 10 }}>
         <Row css={{ mt: 23 }}>
           <Input
+            disabled={serverStarted}
             bordered
             type="number"
             min={1000}
