@@ -25,16 +25,36 @@ setInterval(() => {
   }
 }, 500);
 
+let lastTextWritten: string | undefined;
+let lastImageWritten: Buffer | undefined;
+
 export function syncClipboardFromSocket(
   clipboardType: ClipboardType,
   clipboardContent: Buffer
 ) {
   switch (clipboardType) {
     case 'image':
-      clipboard.writeImage(nativeImage.createFromBuffer(clipboardContent));
+      const currentImageToWrite = clipboardContent;
+
+      if (
+        // 未写入过任何一张图片
+        !lastImageWritten ||
+        // 写入过图片，但「最后一次写入的图片」 与 「本次接收的图片」不一致
+        (lastImageWritten && !lastImageWritten.equals(currentImageToWrite))
+      ) {
+        lastImageWritten = currentImageToWrite;
+        clipboard.writeImage(nativeImage.createFromBuffer(lastImageWritten));
+      }
+
       break;
     case 'text':
-      clipboard.writeText(clipboardContent.toString('utf8'));
+      const currentTextToWrite = clipboardContent.toString('utf8');
+
+      if (currentTextToWrite !== lastTextWritten) {
+        lastTextWritten = currentTextToWrite;
+        clipboard.writeText(lastTextWritten);
+      }
+
       break;
   }
 }
