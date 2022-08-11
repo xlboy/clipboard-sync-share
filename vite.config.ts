@@ -17,11 +17,10 @@ export default defineConfig({
         find: /@ui/,
         replacement: resolve(process.cwd(), './src/ui')
       }
-      // {
-      //   find: 'xmlhttprequest-ssl',
-      //   replacement: './node_modules/engine.io-client/lib/xmlhttprequest.js'
-      // }
     ]
+  },
+  build: {
+    minify: false
   },
   plugins: [
     react(),
@@ -32,7 +31,11 @@ export default defineConfig({
         vite: {
           build: {
             sourcemap: false,
-            outDir: 'dist/electron/'
+            outDir: 'dist/electron/',
+            minify: false,
+            rollupOptions: {
+              external: ['socket.io-client']
+            }
           }
         }
       },
