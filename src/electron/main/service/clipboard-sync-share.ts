@@ -1,26 +1,40 @@
-import { clipboard } from 'electron';
+import { clipboard, nativeImage } from 'electron';
 
 import { shareClipboardBySocket } from './socket';
 
 export type ClipboardType = 'text' | 'image' | 'files';
 
 setInterval(() => {
-  const availableFormats = clipboard.availableFormats();
+  let clipboardType: ClipboardType | undefined;
+  let clipboardContent: Buffer | undefined;
 
+  const availableFormats = clipboard.availableFormats();
   const contentIsImageType = availableFormats.includes('image/png');
+  const contentIsTextType = availableFormats.includes('text/plain');
 
   if (contentIsImageType) {
-    const clipboardImage = clipboard.readImage().toPNG();
-
-    shareClipboardBySocket('image', clipboardImage);
+    clipboardType = 'image';
+    clipboardContent = clipboard.readImage().toPNG();
+  } else if (contentIsTextType) {
+    clipboardType = 'text';
+    clipboardContent = Buffer.from(clipboard.readText());
   }
-}, 1000);
+
+  if (clipboardType) {
+    shareClipboardBySocket(clipboardType, clipboardContent!);
+  }
+}, 500);
 
 export function syncClipboardFromSocket(
   clipboardType: ClipboardType,
   clipboardContent: Buffer
 ) {
-  if (clipboardType === 'image') {
-    console.log('真就丢个图片给我呗…人傻了');
+  switch (clipboardType) {
+    case 'image':
+      clipboard.writeImage(nativeImage.createFromBuffer(clipboardContent));
+      break;
+    case 'text':
+      clipboard.writeText(clipboardContent.toString('utf8'));
+      break;
   }
 }

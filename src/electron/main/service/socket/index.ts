@@ -11,12 +11,9 @@ export function shareClipboardBySocket(
   const serverStarted = serverController.isStartedStatus;
   const clientConnected = clientController.status === 'connected';
 
-  //   if (serverStarted) {
-  //     serverController;
-  //   } else
-  if (clientConnected) {
-    console.log('client 要开始传咯');
-
+  if (serverStarted) {
+    serverController.shareClipboard(clipboardType, clipboardContent);
+  } else if (clientConnected) {
     clientController.shareClipboard(clipboardType, clipboardContent);
   }
 }

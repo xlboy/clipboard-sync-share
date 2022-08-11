@@ -35,8 +35,6 @@ function SettingModal(props: SettingModalProps): JSX.Element {
     return (e: React.ChangeEvent<FormElement>) => {
       const value = e.target.value;
 
-      console.log('value', value);
-
       switch (changeField) {
         case 'connectAddress':
           setConnectAddress(value);

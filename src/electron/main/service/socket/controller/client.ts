@@ -42,8 +42,6 @@ class ClientController extends BaseController {
 
   shareClipboard(clipboardType: ClipboardType, clipboardContent: Buffer): void {
     if (this.status === 'connected') {
-      console.log('已到 client-socket-share-clipboard，开传----「1」');
-
       this.io?.emit(
         this.EventName['client-send-clipboard-to-global'],
         clipboardType,
@@ -56,9 +54,7 @@ class ClientController extends BaseController {
     this.io?.on(
       this.EventName['client-receive-clipboard-from-global'],
       (clipboardType: ClipboardType, clipboardContent: Buffer) => {
-        console.log('已收到其他 global-client 分享的剪贴板内容，「3」');
-
-        syncClipboardFromSocket(clipboardType, clipboardContent);
+        this.syncClipboardFromSocket(clipboardType, clipboardContent);
       }
     );
   }

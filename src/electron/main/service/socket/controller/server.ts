@@ -29,6 +29,14 @@ class ServerController extends BaseController {
     this.io = null;
   }
 
+  shareClipboard(clipboardType: ClipboardType, clipboardContent: Buffer): void {
+    this.io?.emit(
+      this.EventName['client-receive-clipboard-from-global'],
+      clipboardType,
+      clipboardContent
+    );
+  }
+
   get isStartedStatus(): boolean {
     return this.io !== null;
   }
@@ -37,12 +45,10 @@ class ServerController extends BaseController {
     const io = new Server(this.config.port);
 
     io.on('connection', socket => {
-      console.log('访问了');
-
       socket.on(
         this.EventName['client-send-clipboard-to-global'],
         (clipboardType: ClipboardType, clipboardContent: Buffer) => {
-          console.log('已收到 client 传过来的，「2」');
+          this.syncClipboardFromSocket(clipboardType, clipboardContent);
 
           socket.broadcast.emit(
             this.EventName['client-receive-clipboard-from-global'],
