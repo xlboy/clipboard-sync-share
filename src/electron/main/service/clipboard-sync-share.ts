@@ -19,6 +19,7 @@ setInterval(() => {
     clipboardType = 'text';
     clipboardContent = Buffer.from(clipboard.readText());
   }
+  // TODO: file 尚未支持
 
   if (clipboardType) {
     shareClipboardBySocket(clipboardType, clipboardContent!);

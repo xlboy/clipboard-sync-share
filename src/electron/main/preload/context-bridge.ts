@@ -1,17 +1,23 @@
+import type { IpcRendererEvent } from 'electron';
 import { contextBridge, ipcRenderer } from 'electron';
 import type { F } from 'ts-toolbelt';
 
 const exposedAPI = {
   ioServer: {
-    getStatus: () => defineAPIOfInvoke('socket-server:get-current-open-status'),
     start: (port: number) => defineAPIOfInvoke('socket-server:start-server', { port }),
     close: () => defineAPIOfInvoke('socket-server:close-server')
   },
   ioClient: {
     connect: (address: string) => defineAPIOfInvoke('socket-client:connect', address),
-    close: () => defineAPIOfInvoke('socket-client:close'),
-    getStatus: () => defineAPIOfInvoke('socket-client:get-status')
-  }
+    close: () => defineAPIOfInvoke('socket-client:close')
+  },
+  registerIPCEvent: <
+    E extends IPCRendererSubscribe.SOChannel,
+    Args extends IPCRendererSubscribe.SOMap[E]['args']
+  >(
+    eventName: E,
+    callback: F.Function<[IpcRendererEvent, ...Args]>
+  ) => ipcRenderer.on(eventName, callback as any)
 } as const;
 
 contextBridge.exposeInMainWorld('mainProcessAPI', exposedAPI);
@@ -27,9 +33,9 @@ declare global {
 }
 
 function defineAPIOfInvoke<
-  Channel extends IPCMainSubscribe.Channel,
-  Args extends IPCMainSubscribe.Map[Channel]['args'],
-  Return extends IPCMainSubscribe.Map[Channel]['return']
+  Channel extends IPCMainSubscribe.IHChannel,
+  Args extends IPCMainSubscribe.IHMap[Channel]['args'],
+  Return extends IPCMainSubscribe.IHMap[Channel]['return']
 >(channel: Channel, ...args: Args['length'] extends 0 ? [] : Args): Promise<Return> {
   return ipcRenderer.invoke(channel, ...args);
 }

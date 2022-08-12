@@ -1,5 +1,5 @@
-import type { ClipboardType } from '../../clipboard-sync-share';
-import { syncClipboardFromSocket } from '../../clipboard-sync-share';
+import type { ClipboardType } from '@electron/service/clipboard-sync-share';
+import { syncClipboardFromSocket } from '@electron/service/clipboard-sync-share';
 
 class BaseController {
   protected readonly EventName = {

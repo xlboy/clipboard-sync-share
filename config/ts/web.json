@@ -26,7 +26,7 @@
     "../../src/ui",
     "../../src/shared",
     // 提前引入关于「ipc-main」「ipc-renderer」的类型定义
-    "../../src/electron/main/ipc.d.ts",
+    "../../src/shared/types/ipc.ts",
     // 享用上方的「ipc-main」「ipc-renderer」类型定义，以及为「renderer」领域声名相关的类型（mainProcessAPI）
     "../../src/electron/main/preload"
   ]

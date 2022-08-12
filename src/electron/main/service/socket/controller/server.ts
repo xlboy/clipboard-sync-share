@@ -1,18 +1,20 @@
-import type { ServerSocket } from '@shared/types/socket';
+import { getWin } from '@electron/bootstrap';
+import type { ClipboardType } from '@electron/service/clipboard-sync-share';
+import { ipcMainWebContentSend } from '@shared/types/ipc';
+import type { SocketServer } from '@shared/types/socket';
 import { Server } from 'socket.io';
 import type { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
 import BaseController from './base';
-import type { ClipboardType } from '../../clipboard-sync-share';
 
 class ServerController extends BaseController {
-  private config: ServerSocket.Config = {
+  private config: SocketServer.Config = {
     port: 8888
   };
   private io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any> | null =
     null;
 
-  start(config: Pick<ServerSocket.Config, 'port'>): ServerSocket.Config['port'] {
+  start(config: Pick<SocketServer.Config, 'port'>): SocketServer.Config['port'] {
     this.config.port = config.port;
 
     if (this.isStartedStatus) {
@@ -21,12 +23,18 @@ class ServerController extends BaseController {
 
     this.io = this.startServer();
 
+    ipcMainWebContentSend(getWin().webContents)('socket-server:status-change', 'started');
+
     return this.config.port;
   }
 
   close(): void {
     this.io?.close();
     this.io = null;
+    ipcMainWebContentSend(getWin().webContents)(
+      'socket-server:status-change',
+      'not-started'
+    );
   }
 
   shareClipboard(clipboardType: ClipboardType, clipboardContent: Buffer): void {

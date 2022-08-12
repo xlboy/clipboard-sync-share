@@ -1,51 +1,53 @@
-import { useRequest } from 'ahooks';
+import { SegmentedControl } from '@mantine/core';
+import type { SocketClient } from '@shared/types/socket';
 import React from 'react';
+import './ipc';
 
-import Header from './components/Header';
 import IOClientCard from './components/IOClientCard';
 import IOServerCard from './components/IOServerCard';
+import { useSocketStore } from './store';
 import { useStyles } from './styles';
 
 function HomePage(): JSX.Element {
   const styles = useStyles();
+  const socketState = useSocketStore();
 
-  const ServerCardModule = (() => {
-    const { data: serverStarted, refresh: refreshServerStatus } = useRequest(
-      mainProcessAPI.ioServer.getStatus
-    );
+  const socketServerStarted = socketState.server.status === 'started';
 
-    return {
-      data: {
-        refreshServerStatus,
-        serverStarted
-      },
-      Component: IOServerCard
-    };
-  })();
-
-  const ClientCardModule = (() => {
-    const { data: clientSocketStatus, refresh: refreshConnectedStatus } = useRequest(
-      mainProcessAPI.ioClient.getStatus,
-      { pollingInterval: 500, pollingWhenHidden: false }
-    );
-
-    return {
-      Component: IOClientCard,
-      data: {
-        clientSocketStatus,
-        refreshConnectedStatus
-      }
-    };
-  })();
+  const socketClientInProgress = (
+    ['connecting', 'connected'] as SocketClient.Status[]
+  ).includes(socketState.client.status);
 
   return (
     <div className={styles['root-wrapper']}>
-      <Header />
-      {ClientCardModule.data.clientSocketStatus === 'disconnect' && (
-        <ServerCardModule.Component {...ServerCardModule.data} />
+      <SegmentedControl
+        color="grape"
+        fullWidth
+        value={socketState.currentMainService}
+        data={[
+          {
+            label: 'Server',
+            value: 'server',
+            disabled: socketClientInProgress
+          },
+          {
+            label: 'Client',
+            value: 'client',
+            disabled: socketServerStarted
+          }
+        ]}
+        onChange={value => {
+          socketState.updateCurrentMainService(value as any);
+        }}
+        radius="md"
+      />
+
+      {!socketClientInProgress && socketState.currentMainService === 'server' && (
+        <IOServerCard />
       )}
-      {!ServerCardModule.data.serverStarted && (
-        <ClientCardModule.Component {...ClientCardModule.data} />
+
+      {!socketServerStarted && socketState.currentMainService === 'client' && (
+        <IOClientCard />
       )}
     </div>
   );

@@ -10,7 +10,8 @@
     "moduleResolution": "Node",
     "jsx": "react-jsx",
     "paths": {
-      "@shared/*": ["src/shared/*"]
+      "@shared/*": ["src/shared/*"],
+      "@electron/*": ["src/electron/main/*"]
     }
   },
   "include": [

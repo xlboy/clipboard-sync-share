@@ -4,9 +4,6 @@ import clientController from './controller/client';
 import serverController from './controller/server';
 
 //#region  //*=========== server ===========
-ipcMain.handle('socket-server:get-current-open-status', () => {
-  return serverController.isStartedStatus;
-});
 
 ipcMain.handle('socket-server:start-server', (_, { port }) => {
   const startedPort = serverController.start({ port });
@@ -29,7 +26,6 @@ ipcMain.handle('socket-client:close', () => {
   clientController.close();
 });
 
-ipcMain.handle('socket-client:get-status', () => {
-  return clientController.status;
-});
+// ipcMainWebContentSend(win.webContents)('socket-server:status-change');
+
 //#endregion  //*======== client ===========

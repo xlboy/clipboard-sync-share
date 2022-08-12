@@ -1,32 +1,26 @@
-import { Button, Card, Input, Loading, Row, Text } from '@nextui-org/react';
-import type { ClientSocket } from '@shared/types/socket';
+import type { MantineColor } from '@mantine/core';
+import { Button, Loader, TextInput } from '@mantine/core';
 import { useSetState } from 'ahooks';
 import { memo } from 'react';
-import type { F } from 'ts-toolbelt';
+import { tw } from 'twind';
 
-interface IOClientCardProps {
-  refreshConnectedStatus: F.Function;
-  clientSocketStatus?: ClientSocket.Status;
-}
+import { useSocketStore } from '../store';
+
+interface IOClientCardProps {}
 
 function IOClientCard(props: IOClientCardProps): JSX.Element {
-  const { clientSocketStatus, refreshConnectedStatus } = props;
-
+  const socketState = useSocketStore();
   const [{ connectAddress }, setStates] = useSetState({
     connectAddress: 'http://localhost:8888'
   });
 
   async function onCloseClientSocket() {
     await mainProcessAPI.ioClient.close();
-
-    refreshConnectedStatus();
   }
 
   async function onConnectClientSocket() {
     if (connectAddress) {
       mainProcessAPI.ioClient.connect(connectAddress);
-
-      refreshConnectedStatus();
     } else {
       alert('Please enter connect address');
     }
@@ -34,64 +28,47 @@ function IOClientCard(props: IOClientCardProps): JSX.Element {
 
   async function onCancelClientSocket() {
     await mainProcessAPI.ioClient.close();
-    refreshConnectedStatus();
   }
 
   return (
-    <Card css={{ w: '100%', my: 10 }}>
-      <Card.Header>
-        <Row justify="space-between" css={{ w: '100%' }}>
-          <Text b>Client Controller</Text>
-        </Row>
-      </Card.Header>
-      <Card.Divider />
+    <div className={tw`py-[10px]`}>
+      <TextInput
+        label="Connect Address"
+        color="secondary"
+        variant="filled"
+        value={connectAddress}
+        required
+        onChange={e => {
+          setStates({ connectAddress: e.target.value });
+        }}
+      />
 
-      <Card.Body css={{ py: 10 }}>
-        <Row css={{ mt: 23 }}>
-          <Input
-            disabled={(['connecting', 'connected'] as ClientSocket.Status[]).includes(
-              clientSocketStatus!
-            )}
-            bordered
-            labelPlaceholder="Connect Address"
-            css={{ w: '100%' }}
-            color="secondary"
-            value={connectAddress}
-            onChange={e => {
-              setStates({ connectAddress: e.target.value });
-            }}
-          />
-        </Row>
+      <div className={tw`mt-[10px]`}>
+        {socketState.client.status === 'connected' ? (
+          <Button onClick={onCloseClientSocket} color="red" fullWidth variant="light">
+            Disconnect
+          </Button>
+        ) : (
+          (isConnectingStatus => {
+            const color: MantineColor = isConnectingStatus ? 'yellow' : 'teal';
 
-        <Row css={{ mt: 10 }}>
-          {clientSocketStatus === 'connected' ? (
-            <Button
-              onPress={onCloseClientSocket}
-              css={{ w: '100%' }}
-              color="error"
-              shadow
-            >
-              Disconnect
-            </Button>
-          ) : (
-            (isConnectingStatus => (
+            return (
               <Button
-                onPress={
+                onClick={
                   isConnectingStatus ? onCancelClientSocket : onConnectClientSocket
                 }
-                css={{ w: '100%' }}
-                color={isConnectingStatus ? 'warning' : 'success'}
-                iconRight={
-                  isConnectingStatus ? <Loading color="currentColor" size="sm" /> : null
-                }
+                color={color}
+                fullWidth
+                variant="light"
+                rightIcon={isConnectingStatus ? <Loader size="sm" color={color} /> : null}
               >
                 {isConnectingStatus ? 'Cancel' : 'Connect'}
               </Button>
-            ))(clientSocketStatus === 'connecting')
-          )}
-        </Row>
-      </Card.Body>
-    </Card>
+            );
+          })(socketState.client.status === 'connecting')
+        )}
+      </div>
+    </div>
   );
 }
 

@@ -1,18 +1,28 @@
-import type { ClientSocket } from '@shared/types/socket';
+import { getWin } from '@electron/bootstrap';
+import { ipcMainWebContentSend } from '@shared/types/ipc';
+import type { SocketClient } from '@shared/types/socket';
 import type { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import type { Socket } from 'socket.io-client';
 import { io as ioClient } from 'socket.io-client';
 
 import BaseController from './base';
 import type { ClipboardType } from '../../clipboard-sync-share';
-import { syncClipboardFromSocket } from '../../clipboard-sync-share';
 
 class ClientController extends BaseController {
   private io: Socket<DefaultEventsMap, DefaultEventsMap> | null = null;
-  status: ClientSocket.Status = 'disconnect';
+  private _status: SocketClient.Status = 'disconnect';
+
+  get status() {
+    return this._status;
+  }
+
+  set status(status) {
+    this._status = status;
+    ipcMainWebContentSend(getWin().webContents)('socket-client:status-change', status);
+  }
 
   connect(address: string) {
-    if ((['connected', 'connecting'] as ClientSocket.Status[]).includes(this.status)) {
+    if ((['connected', 'connecting'] as SocketClient.Status[]).includes(this.status)) {
       this.close();
     }
 

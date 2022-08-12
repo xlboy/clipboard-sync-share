@@ -1,74 +1,52 @@
-import { Button, Card, Input, Row, Text } from '@nextui-org/react';
+import { Button, TextInput } from '@mantine/core';
 import { useSetState } from 'ahooks';
 import { memo } from 'react';
-import type { F } from 'ts-toolbelt';
 import { tw } from 'twind';
 
-interface IOServerCardProps {
-  serverStarted?: boolean;
-  refreshServerStatus: F.Function;
-}
+import { useSocketStore } from '../store';
+
+interface IOServerCardProps {}
 
 function IOServerCard(props: IOServerCardProps): JSX.Element {
-  const { refreshServerStatus, serverStarted } = props;
+  const socketState = useSocketStore();
   const [{ serverPort }, setStates] = useSetState({
     serverPort: 8888
   });
 
   async function onCloseSocketServer() {
     await mainProcessAPI.ioServer.close();
-
-    refreshServerStatus();
   }
 
   async function onStartSocketServer() {
     const port = await mainProcessAPI.ioServer.start(serverPort);
 
-    refreshServerStatus();
     setStates({ serverPort: port });
   }
 
   return (
-    <Card className={tw`w-full my-[10px]`}>
-      <Card.Header>
-        <div className={tw`w-full flex justify-between`}>
-          <Text b>Server Controller</Text>
-          <Text b color={serverStarted ? '#54da00' : '#da5e00'}>
-            {serverStarted ? `${serverPort} port started` : 'closed'}
-          </Text>
-        </div>
-      </Card.Header>
-      <Card.Divider />
-
-      <Card.Body css={{ py: 10 }}>
-        <Row css={{ mt: 23 }}>
-          <Input
-            disabled={serverStarted}
-            bordered
-            type="number"
-            min={1000}
-            labelPlaceholder="Server Port"
-            css={{ w: '100%', mb: 10 }}
-            color="secondary"
-            value={serverPort}
-            onChange={e => {
-              setStates({ serverPort: +e.target.value });
-            }}
-          />
-        </Row>
-        <Row>
-          {serverStarted ? (
-            <Button onPress={onCloseSocketServer} css={{ w: '100%' }} color="error">
-              Close
-            </Button>
-          ) : (
-            <Button onPress={onStartSocketServer} css={{ w: '100%' }} color="success">
-              Open
-            </Button>
-          )}
-        </Row>
-      </Card.Body>
-    </Card>
+    <div className={tw`py-[10px]`}>
+      <TextInput
+        label="Server Port"
+        variant="filled"
+        radius="md"
+        required
+        value={serverPort}
+        onChange={e => {
+          setStates({ serverPort: +e.target.value });
+        }}
+      />
+      <div className={tw`mt-[10px]`}>
+        {socketState.server.status === 'started' ? (
+          <Button onClick={onCloseSocketServer} fullWidth variant="light" color="red">
+            Close
+          </Button>
+        ) : (
+          <Button onClick={onStartSocketServer} fullWidth variant="light" color="teal">
+            Open
+          </Button>
+        )}
+      </div>
+    </div>
   );
 }
 

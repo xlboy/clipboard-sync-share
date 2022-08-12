@@ -1,4 +1,4 @@
-import { Button, Loading } from '@nextui-org/react';
+import { Button, Loader, MantineProvider } from '@mantine/core';
 import * as React from 'react';
 import { Inspector } from 'react-dev-inspector';
 import ReactDOM from 'react-dom';
@@ -34,7 +34,7 @@ function App(): JSX.Element {
     <React.Suspense
       fallback={
         <div className={tw`flex items-center justify-center w-screen h-screen`}>
-          <Loading type="points" />
+          <Loader color="grape" />;
         </div>
       }
     >
@@ -52,4 +52,9 @@ function App(): JSX.Element {
   );
 }
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(
+  <MantineProvider>
+    <App />
+  </MantineProvider>,
+  document.getElementById('root')
+);

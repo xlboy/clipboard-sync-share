@@ -18,9 +18,19 @@ process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 
 let win: BrowserWindow | null = null;
 
+export function getWin(): BrowserWindow {
+  return win!;
+}
+
 async function createWindow() {
   win = new BrowserWindow({
     title: 'clipboard-sync-app',
+    width: 613,
+    maxWidth: 613,
+    maxHeight: 800,
+    height: 800,
+    x: 1920 - 613,
+    y: 1080 - 800,
     webPreferences: {
       preload: join(__dirname, './preload.js'),
       nodeIntegration: true

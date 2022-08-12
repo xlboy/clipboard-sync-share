@@ -9,6 +9,11 @@ import pkg from './package.json';
 
 removeDistDir();
 
+const sharedAlias = {
+  find: /@shared/,
+  replacement: resolve(process.cwd(), './src/shared')
+};
+
 // https://vitejs.dev/config/
 export default defineConfig({
   resolve: {
@@ -16,7 +21,8 @@ export default defineConfig({
       {
         find: /@ui/,
         replacement: resolve(process.cwd(), './src/ui')
-      }
+      },
+      sharedAlias
     ]
   },
   build: {
@@ -29,6 +35,15 @@ export default defineConfig({
       main: {
         entry: 'src/electron/main/bootstrap.ts',
         vite: {
+          resolve: {
+            alias: [
+              sharedAlias,
+              {
+                find: /@electron/,
+                replacement: resolve(process.cwd(), './src/electron/main')
+              }
+            ]
+          },
           build: {
             sourcemap: false,
             outDir: 'dist/electron/',
