@@ -14,7 +14,7 @@ import { useStyles } from './styles';
 function HomePage(): JSX.Element {
   const styles = useStyles();
   const socketState = useSocketStore();
-  const localIP = mainProcessAPI.getLocalIP();
+  const localDeviceInfo = mainProcessAPI.getLocalDeviceInfo();
 
   const socketServerStarted = socketState.server.status === 'started';
   const socketClientConnected = socketState.client.status === 'connected';
@@ -101,7 +101,12 @@ function HomePage(): JSX.Element {
 
       <Divider my="sm" />
       <div className={tw`w-full flex items-center justify-center`}>
-        Local IP: <Badge className={tw`normal-case ml-[10px]`}>{localIP}</Badge>
+        Local Hostname:{' '}
+        <Badge className={tw`normal-case ml-[10px]`}>{localDeviceInfo.hostname}</Badge>
+      </div>
+      <div className={tw`w-full flex items-center justify-center`}>
+        Local IP:{' '}
+        <Badge className={tw`normal-case ml-[10px]`}>{localDeviceInfo.ip}</Badge>
       </div>
     </div>
   );

@@ -9,8 +9,6 @@ interface ConnectInfoCardProps {}
 function ConnectInfoCard(props: ConnectInfoCardProps): JSX.Element {
   const { currentConnectedInfo } = useSocketStore();
 
-  console.log('是是是，有这些人', currentConnectedInfo);
-
   return (
     <Card shadow="md" className={tw`mt-[10px] overflow-hidden`}>
       <Card.Section withBorder inheritPadding py="xs">

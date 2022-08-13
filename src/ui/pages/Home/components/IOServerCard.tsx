@@ -12,11 +12,12 @@ interface IOServerCardProps {}
 
 function IOServerCard(props: IOServerCardProps): JSX.Element {
   const { server: serverState } = useSocketStore();
+  const localDeviceInfo = mainProcessAPI.getLocalDeviceInfo();
 
   // TODO: 尝试换成 react-hook-form + zod
   const formik = useFormik({
     initialValues: {
-      hostname: '',
+      hostname: localDeviceInfo.hostname,
       port: '8888'
     },
     async onSubmit(values) {

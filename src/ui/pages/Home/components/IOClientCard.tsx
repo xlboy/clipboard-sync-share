@@ -12,6 +12,7 @@ interface IOClientCardProps {}
 
 function IOClientCard(props: IOClientCardProps): JSX.Element {
   const { client: clientState } = useSocketStore();
+  const localDeviceInfo = mainProcessAPI.getLocalDeviceInfo();
 
   const clientConnected = clientState.status === 'connected';
   const clientConnecting = clientState.status === 'connecting';
@@ -19,7 +20,7 @@ function IOClientCard(props: IOClientCardProps): JSX.Element {
   // TODO: 尝试换成 react-hook-form + zod
   const formik = useFormik({
     initialValues: {
-      hostname: '',
+      hostname: localDeviceInfo.hostname,
       connectAddress: 'http://localhost:8888'
     },
     onSubmit(values) {
