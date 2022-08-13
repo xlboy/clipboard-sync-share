@@ -1,10 +1,11 @@
-import { Badge, Kbd, SegmentedControl } from '@mantine/core';
+import { Badge, Divider, Kbd, SegmentedControl } from '@mantine/core';
 import { useHotkeys } from '@mantine/hooks';
 import type { SocketClient } from '@shared/types/socket';
 import React from 'react';
 import { tw } from 'twind';
 import './ipc';
 
+import ConnectInfoCard from './components/ConnectInfoCard';
 import IOClientCard from './components/IOClientCard';
 import IOServerCard from './components/IOServerCard';
 import { useSocketStore } from './store';
@@ -13,8 +14,10 @@ import { useStyles } from './styles';
 function HomePage(): JSX.Element {
   const styles = useStyles();
   const socketState = useSocketStore();
+  const localIP = mainProcessAPI.getLocalIP();
 
   const socketServerStarted = socketState.server.status === 'started';
+  const socketClientConnected = socketState.client.status === 'connected';
 
   const socketClientInProgress = (
     ['connecting', 'connected'] as SocketClient.Status[]
@@ -82,14 +85,24 @@ function HomePage(): JSX.Element {
         }}
         radius="md"
       />
-
       {!socketClientInProgress && socketState.currentMainService === 'server' && (
         <IOServerCard />
       )}
-
       {!socketServerStarted && socketState.currentMainService === 'client' && (
         <IOClientCard />
       )}
+
+      {(socketServerStarted || socketClientConnected) && (
+        <>
+          <Divider my="sm" />
+          <ConnectInfoCard />
+        </>
+      )}
+
+      <Divider my="sm" />
+      <div className={tw`w-full flex items-center justify-center`}>
+        Local IP: <Badge className={tw`normal-case ml-[10px]`}>{localIP}</Badge>
+      </div>
     </div>
   );
 }
