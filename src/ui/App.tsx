@@ -6,7 +6,7 @@ import ReactDOM from 'react-dom';
 import { ErrorBoundary } from 'react-error-boundary';
 import { QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { HashRouter as Router } from 'react-router-dom';
 import { tw } from 'twind';
 
 import Routes from './Routes';
