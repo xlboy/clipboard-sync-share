@@ -1,6 +1,7 @@
 import type { SocketServer } from '@shared/types/socket';
 import type { IpcRendererEvent } from 'electron';
 import { contextBridge, ipcRenderer } from 'electron';
+import * as ip from 'ip';
 import type { F } from 'ts-toolbelt';
 
 const exposedAPI = {
@@ -14,6 +15,9 @@ const exposedAPI = {
     connect: (address: string, hostname: string) =>
       defineAPIOfInvoke('socket-client:connect', address, hostname),
     close: () => defineAPIOfInvoke('socket-client:close')
+  },
+  getLocalIP: (): string => {
+    return ip.address();
   },
   registerIPCEvent: <
     E extends IPCRendererSubscribe.SOChannel,

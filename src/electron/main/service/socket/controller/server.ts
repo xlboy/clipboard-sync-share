@@ -2,6 +2,7 @@ import { getWin } from '@electron/bootstrap';
 import type { ClipboardType } from '@electron/service/clipboard-sync-share';
 import { ipcMainWebContentSend } from '@shared/types/ipc';
 import type { SocketClient, SocketServer } from '@shared/types/socket';
+import * as ip from 'ip';
 import _ from 'lodash';
 import { Server } from 'socket.io';
 import type { DefaultEventsMap } from 'socket.io/dist/typed-events';
@@ -14,7 +15,8 @@ class ServerController extends BaseController {
   };
 
   private info: SocketServer.Info = {
-    hostname: ''
+    hostname: '',
+    ip: ip.address()
   };
 
   private io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any> | null =

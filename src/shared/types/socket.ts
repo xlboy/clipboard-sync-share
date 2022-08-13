@@ -14,6 +14,7 @@ export namespace SocketServer {
   }
 
   export interface Info {
+    ip: string;
     hostname: string;
   }
 
