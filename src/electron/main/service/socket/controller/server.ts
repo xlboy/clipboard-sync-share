@@ -2,6 +2,7 @@ import { getWin } from '@electron/bootstrap';
 import type { ClipboardType } from '@electron/service/clipboard-sync-share';
 import { ipcMainWebContentSend } from '@shared/types/ipc';
 import type { SocketClient, SocketServer } from '@shared/types/socket';
+import _ from 'lodash';
 import { Server } from 'socket.io';
 import type { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
@@ -69,7 +70,7 @@ class ServerController extends BaseController {
 
       console.log('connectInfo', connectInfo);
 
-      this.connectedClient.join(connectInfo);
+      this.connectedClient.join(_.pick(connectInfo, ['hostname', 'ip', 'status']));
       this.updateCurrentConnectedInfo();
 
       socket.on('disconnect', reason => {
