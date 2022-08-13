@@ -1,73 +1,107 @@
-import type { MantineColor } from '@mantine/core';
+import type { MantineColor, TextInputProps } from '@mantine/core';
 import { Button, Loader, TextInput } from '@mantine/core';
 import { useSetState } from 'ahooks';
+import { useFormik } from 'formik';
 import { memo } from 'react';
 import { tw } from 'twind';
 
+import { MaterialSymbolsCheckCircleRounded } from '../icons';
 import { useSocketStore } from '../store';
 
 interface IOClientCardProps {}
 
 function IOClientCard(props: IOClientCardProps): JSX.Element {
-  const socketState = useSocketStore();
-  const [{ connectAddress }, setStates] = useSetState({
-    connectAddress: 'http://localhost:8888'
+  const { client: clientState } = useSocketStore();
+
+  const clientConnected = clientState.status === 'connected';
+  const clientConnecting = clientState.status === 'connecting';
+
+  // TODO: 尝试换成 react-hook-form + zod
+  const formik = useFormik({
+    initialValues: {
+      hostname: '',
+      connectAddress: 'http://localhost:8888'
+    },
+    onSubmit(values) {
+      mainProcessAPI.ioClient.connect(values.connectAddress, values.hostname);
+
+      // showNotification({
+      //   color: 'teal',
+      //   title: 'Startup success',
+      //   icon: <MaterialSymbolsCheckCircleRounded fontSize={30} />,
+      //   message: (
+      //     <span>
+      //       The service of port{' '}
+      //       <span className={tw`font-extrabold`}>{formik.values.port}</span> has been
+      //       started successfully.
+      //     </span>
+      //   ),
+      //   autoClose: 2000
+      // });
+    }
   });
 
-  async function onCloseClientSocket() {
-    await mainProcessAPI.ioClient.close();
+  function onCloseClient() {
+    mainProcessAPI.ioClient.close();
   }
 
-  async function onConnectClientSocket() {
-    if (connectAddress) {
-      mainProcessAPI.ioClient.connect(connectAddress);
-    } else {
-      alert('Please enter connect address');
-    }
+  function onCancelConnectClient() {
+    mainProcessAPI.ioClient.close();
   }
 
-  async function onCancelClientSocket() {
-    await mainProcessAPI.ioClient.close();
-  }
+  const formBaseProps: TextInputProps = {
+    onChange: formik.handleChange,
+    onBlur: formik.handleBlur
+  };
 
   return (
     <div className={tw`py-[10px]`}>
-      <TextInput
-        label="Connect Address"
-        color="secondary"
-        variant="filled"
-        value={connectAddress}
-        required
-        onChange={e => {
-          setStates({ connectAddress: e.target.value });
-        }}
-      />
+      <form onSubmit={formik.handleSubmit}>
+        <TextInput
+          label="Hostname"
+          variant="filled"
+          radius="md"
+          name="hostname"
+          {...formBaseProps}
+          value={formik.values.hostname}
+          disabled={clientConnected || clientConnecting}
+        />
+        <TextInput
+          label="Connect Address"
+          variant="filled"
+          radius="md"
+          name="connectAddress"
+          required
+          {...formBaseProps}
+          value={formik.values.connectAddress}
+          disabled={clientConnected || clientConnecting}
+        />
 
-      <div className={tw`mt-[10px]`}>
-        {socketState.client.status === 'connected' ? (
-          <Button onClick={onCloseClientSocket} color="red" fullWidth variant="light">
-            Disconnect
-          </Button>
-        ) : (
-          (isConnectingStatus => {
-            const color: MantineColor = isConnectingStatus ? 'yellow' : 'teal';
+        <div className={tw`mt-[10px]`}>
+          {clientConnected ? (
+            <Button onClick={onCloseClient} color="red" fullWidth variant="light">
+              Disconnect
+            </Button>
+          ) : (
+            (() => {
+              const color: MantineColor = clientConnecting ? 'yellow' : 'teal';
 
-            return (
-              <Button
-                onClick={
-                  isConnectingStatus ? onCancelClientSocket : onConnectClientSocket
-                }
-                color={color}
-                fullWidth
-                variant="light"
-                rightIcon={isConnectingStatus ? <Loader size="sm" color={color} /> : null}
-              >
-                {isConnectingStatus ? 'Cancel' : 'Connect'}
-              </Button>
-            );
-          })(socketState.client.status === 'connecting')
-        )}
-      </div>
+              return (
+                <Button
+                  type={clientConnecting ? 'button' : 'submit'}
+                  onClick={clientConnecting ? onCancelConnectClient : undefined}
+                  color={color}
+                  fullWidth
+                  variant="light"
+                  rightIcon={clientConnecting ? <Loader size="sm" color={color} /> : null}
+                >
+                  {clientConnecting ? 'Cancel' : 'Connect'}
+                </Button>
+              );
+            })()
+          )}
+        </div>
+      </form>
     </div>
   );
 }

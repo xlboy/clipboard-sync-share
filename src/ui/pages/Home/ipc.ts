@@ -13,3 +13,12 @@ mainProcessAPI.registerIPCEvent('socket-server:status-change', (_, status) => {
 
   updateServerStatus(status);
 });
+
+mainProcessAPI.registerIPCEvent(
+  'socket:connected-client-change',
+  (_, server, clients) => {
+    const { updateCurrentConnectedInfo } = useSocketStore.getState();
+
+    updateCurrentConnectedInfo({ server, clients });
+  }
+);

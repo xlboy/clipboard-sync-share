@@ -9,7 +9,9 @@ declare global {
      * */
     export interface IHMap {
       'socket-server:start-server': {
-        args: [config: Pick<SocketServer.Config, 'port'>];
+        args: [
+          options: Pick<SocketServer.Config, 'port'> & Pick<SocketServer.Info, 'hostname'>
+        ];
         return: SocketServer.Config['port'];
       };
 
@@ -19,7 +21,7 @@ declare global {
       };
 
       'socket-client:connect': {
-        args: [address: string];
+        args: [address: string, hostname: SocketServer.ConnectClientInfo['hostname']];
         return: void;
       };
       'socket-client:close': {
@@ -42,6 +44,9 @@ declare global {
       };
       'socket-client:status-change': {
         args: [status: SocketClient.Status];
+      };
+      'socket:connected-client-change': {
+        args: [server: SocketServer.Info, clients: SocketServer.ConnectClientInfo[]];
       };
     }
 

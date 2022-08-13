@@ -1,4 +1,5 @@
 import { Button, Loader, MantineProvider } from '@mantine/core';
+import { NotificationsProvider } from '@mantine/notifications';
 import * as React from 'react';
 import { Inspector } from 'react-dev-inspector';
 import ReactDOM from 'react-dom';
@@ -54,7 +55,9 @@ function App(): JSX.Element {
 
 ReactDOM.render(
   <MantineProvider>
-    <App />
+    <NotificationsProvider>
+      <App />
+    </NotificationsProvider>
   </MantineProvider>,
   document.getElementById('root')
 );

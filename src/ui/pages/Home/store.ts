@@ -6,23 +6,31 @@ import { immer } from 'zustand/middleware/immer';
 
 interface SocketStoreState {
   currentMainService: 'client' | 'server';
+  currentConnectedInfo: {
+    server?: SocketServer.Info;
+    clients: SocketServer.ConnectClientInfo[];
+  };
   server: {
     status: SocketServer.Status;
-    connectedUsers: SocketServer.ConnectUserInfo[];
+    connectedUsers: SocketServer.ConnectClientInfo[];
   };
   client: {
     status: SocketClient.Status;
-    connectInfo: Omit<SocketServer.ConnectUserInfo, 'status'>;
+    connectInfo: Omit<SocketServer.ConnectClientInfo, 'status'>;
   };
 }
 
 interface SocketStoreActions {
   updateServerStatus(status: SocketServer.Status): void;
-  updateServerConnectedUsers(users: SocketServer.ConnectUserInfo[]): void;
+  updateServerConnectedUsers(users: SocketServer.ConnectClientInfo[]): void;
 
   updateClientStatus(status: SocketClient.Status): void;
 
   updateCurrentMainService(service: SocketStoreState['currentMainService']): void;
+
+  updateCurrentConnectedInfo(
+    currentConnectedInfo: SocketStoreState['currentConnectedInfo']
+  ): void;
 }
 
 type Store = SocketStoreState & SocketStoreActions;
@@ -40,6 +48,10 @@ export const useSocketStore = create<
       immer(set => ({
         //#region  //*=========== state ===========
         currentMainService: 'server',
+        currentConnectedInfo: {
+          clients: [],
+          server: undefined
+        },
         server: {
           connectedUsers: [],
           status: 'not-started'
@@ -68,6 +80,10 @@ export const useSocketStore = create<
         updateCurrentMainService: service =>
           set(state => {
             state.currentMainService = service;
+          }),
+        updateCurrentConnectedInfo: currentConnectedInfo =>
+          set(state => {
+            state.currentConnectedInfo = currentConnectedInfo;
           })
         //#endregion  //*======== action ===========
       })),

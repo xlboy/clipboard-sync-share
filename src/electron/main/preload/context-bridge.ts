@@ -1,14 +1,18 @@
+import type { SocketServer } from '@shared/types/socket';
 import type { IpcRendererEvent } from 'electron';
 import { contextBridge, ipcRenderer } from 'electron';
 import type { F } from 'ts-toolbelt';
 
 const exposedAPI = {
   ioServer: {
-    start: (port: number) => defineAPIOfInvoke('socket-server:start-server', { port }),
+    start: (
+      options: Pick<SocketServer.Config, 'port'> & Pick<SocketServer.Info, 'hostname'>
+    ) => defineAPIOfInvoke('socket-server:start-server', options),
     close: () => defineAPIOfInvoke('socket-server:close-server')
   },
   ioClient: {
-    connect: (address: string) => defineAPIOfInvoke('socket-client:connect', address),
+    connect: (address: string, hostname: string) =>
+      defineAPIOfInvoke('socket-client:connect', address, hostname),
     close: () => defineAPIOfInvoke('socket-client:close')
   },
   registerIPCEvent: <
