@@ -64,7 +64,9 @@ class ServerController extends BaseController {
   }
 
   private startServer(): typeof io {
-    const io = new Server(this.config.port);
+    const io = new Server(this.config.port, {
+      maxHttpBufferSize: 1e8
+    });
 
     io.on('connection', socket => {
       const connectInfo = socket.handshake
