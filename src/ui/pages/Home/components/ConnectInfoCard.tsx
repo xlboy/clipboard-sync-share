@@ -35,6 +35,7 @@ function ConnectInfoCard(props: ConnectInfoCardProps): JSX.Element {
     return (
       <div
         className={tw`hover:(shadow-lg) cursor-pointer border(&) rounded-[5px] p-[5px]`}
+        key={info.ip}
       >
         <Badge color={type === 'client' ? 'indigo' : 'grape'}>
           {type === 'client' ? 'Client Host' : 'Server Host'}
