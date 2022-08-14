@@ -7,7 +7,7 @@ import { immer } from 'zustand/middleware/immer';
 interface SocketStoreState {
   currentMainService: 'client' | 'server';
   currentConnectedInfo: {
-    server?: SocketServer.Info;
+    server: SocketServer.Info;
     clients: SocketServer.ConnectClientInfo[];
   };
   server: {
@@ -50,7 +50,10 @@ export const useSocketStore = create<
         currentMainService: 'server',
         currentConnectedInfo: {
           clients: [],
-          server: undefined
+          server: {
+            hostname: '',
+            ip: ''
+          }
         },
         server: {
           connectedUsers: [],

@@ -17,7 +17,7 @@ function ConnectInfoCard(props: ConnectInfoCardProps): JSX.Element {
         </Group>
       </Card.Section>
       <div className={tw`w-full flex p-[10px] justify-around`}>
-        {renderConnectInfo('server', currentConnectedInfo.server!)}
+        {renderConnectInfo('server', currentConnectedInfo.server)}
         {currentConnectedInfo.clients.map(client => renderConnectInfo('client', client))}
       </div>
     </Card>
